@@ -1,6 +1,5 @@
 need
 
--  sass
 -  lint:fix
 -  contentful
 -  graphql
