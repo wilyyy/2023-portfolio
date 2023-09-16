@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
+import styles from "./obfuscatedText.module.scss";
 
 interface Props {
    obfuscationSpeed?: number;
    children: string;
+   className?: string;
 }
 
-export default function ObfuscatedText({ children, obfuscationSpeed = 1000 }: Props) {
+export default function ObfuscatedText({
+   children,
+   obfuscationSpeed = 1000,
+   className,
+}: Props) {
    const obfuscationCharacters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@#$%^&*()-+=[]{}|;:,./<>?";
 
@@ -13,33 +19,53 @@ export default function ObfuscatedText({ children, obfuscationSpeed = 1000 }: Pr
    const [reveal, setReveal] = useState<boolean>(false);
 
    useEffect(() => {
-      const obfuscate = () => {
-         const obfuscatedChars = children
-            .split("")
-            .map(() => {
-               const randomCharIndex = Math.floor(
-                  Math.random() * obfuscationCharacters.length
-               );
-               return obfuscationCharacters[randomCharIndex];
-            })
-            .join("");
-
-         setObfuscatedText(obfuscatedChars);
-      };
-
-      const obfuscationInterval = setInterval(obfuscate, 100); // Change characters every 100ms
-
       const revealTimeout = setTimeout(() => {
-         clearInterval(obfuscationInterval);
          setObfuscatedText(children);
          setReveal(true);
       }, obfuscationSpeed);
 
       return () => {
-         clearInterval(obfuscationInterval);
          clearTimeout(revealTimeout);
       };
    }, [children, obfuscationSpeed]);
 
-   return <div>{obfuscatedText}</div>;
+   useEffect(() => {
+      if (!reveal) {
+         //  const characterCount = children.replace(/ /g, "").length;
+         let obfuscationInterval: NodeJS.Timeout;
+
+         const Obfuscate = () => {
+            const obfuscatedChars = children
+               .split("")
+               .map((char) => {
+                  const randomCharIndex = Math.floor(
+                     Math.random() * obfuscationCharacters.length
+                  );
+                  return char !== " " ? obfuscationCharacters[randomCharIndex] : " ";
+               })
+               .join("");
+
+            setObfuscatedText(obfuscatedChars);
+         };
+
+         const StartObfuscating = () => {
+            Obfuscate();
+
+            const randomInterval = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
+            obfuscationInterval = setTimeout(StartObfuscating, randomInterval);
+         };
+
+         StartObfuscating();
+
+         return () => {
+            clearTimeout(obfuscationInterval);
+         };
+      }
+   }, [children, reveal]);
+
+   return (
+      <p className={`${className}, ${styles.test}`}>
+         {reveal ? children : obfuscatedText}
+      </p>
+   );
 }
