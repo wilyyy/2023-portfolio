@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import styles from "./obfuscatedText.module.scss";
 
 interface Props {
    obfuscationSpeed?: number;
@@ -63,9 +62,5 @@ export default function ObfuscatedText({
       }
    }, [children, reveal]);
 
-   return (
-      <p className={`${className}, ${styles.test}`}>
-         {reveal ? children : obfuscatedText}
-      </p>
-   );
+   return <p className={className}>{reveal ? children : obfuscatedText}</p>;
 }
