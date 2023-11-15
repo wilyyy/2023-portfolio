@@ -5,8 +5,6 @@
 Need:
 
 -  lint:fix
--  contentful
--  graphql
 -  jest + playwright
 -  framer
 
